@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="realstate_tree" model="ir.ui.view">
+        <field name="name">real.state.tree</field>
+        <field name="model">real.state</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="type_property"/>
+                <field name="realstate_cep"/>
+                <field name="date_when"/>
+                <field name="expected_price"/>
+                <field name="best_offer"/>
+                <field name="selling_price"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="realstate_form" model="ir.ui.view">
+        <field name="name">real.state.form</field>
+        <field name="model">real.state</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                  <group>
+                        <field name="type_property" string="Tipo de propriedade"/>
+                        <field name="realstate_cep" string="Código postal"/>
+                        <field name="date_when" string="Disponível desde"/>
+                        </group>
+                        <group>
+                        <field name="expected_price" string="Expectativa de preço"/>
+                        <field name="best_offer" string="Melhor oferta"/>
+                        <field name="selling_price" string="Preço de venda"/>
+                        </group>
+                    <page string="Descrição">
+                        <field name="description" />
+                        <field name="bedrooms" />
+                        <field name="living_area" />
+                        <field name="facade" />
+                        <field name="garage" />
+                        <field name="garden" />
+                        <field name="total_area" />
+                    </page>
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="realstate_action" model="ir.actions.act_window">
+        <field name="name">Controle de Mobília</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">real.state</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crie um novo relatório de mobília
+            </p>
+        </field>
+    </record>
+
+
+    <menuitem id="realstate_root"
+              name="Mobílias"
+              sequence="10"/>
+
+    <menuitem id="real_state_root"
+              name="Mobílias"
+              parent="realstate_root"
+              sequence="10"/>
+    <menuitem id="realstate"
+              name="Mobília"
+              parent="realstate_root"
+              action="realstate_action"
+              sequence="10"/>
+</odoo>
