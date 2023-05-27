@@ -5,9 +5,9 @@ class RealState(models.Model):
     _name = 'real.state'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'real.state.line']
     _description = 'Real State Control'
-    _rec_name = 'type'
+    _rec_name = 'reference'
 
-    reference = fields.Char(string='Order Reference', required=True, copy=False, readonly=True,
+    reference = fields.Char(string='Pedido', required=True, copy=False, readonly=True,
                             default=lambda self: _('New'))
     type = fields.Many2one('real.state.property', string="Tipo da propriedade", required=True)
     realstate_cep = fields.Char(string='Código postal',
@@ -23,11 +23,18 @@ class RealState(models.Model):
     garage = fields.Boolean(string='Garagem')
     garden = fields.Boolean(string='Quintal')
     total_area = fields.Integer(string='Área total (m²)')
-    realstate_line = fields.One2many('real.state.line', 'newtype', string='Pedidos')
+    realstate_line = fields.One2many('real.state.line', 'type', string='Pedidos')
+
+    @api.model
+    def create(self, vals):
+        if vals.get('reference', ('New')) == ('New'):
+            vals['reference'] = self.env['ir.sequence'].next_by_code('real.state') or _('New')
+        return super(RealState, self).create(vals)
+
 
     class RealStateLine(models.Model):
         _name = 'real.state.line'
 
-        partner_id = fields.Many2one('res.partner', string='Parceiro', required=True)
-        offer = fields.Float(string='Oferta', required=True)
-        newtype = fields.Many2one('real.state.property', string="Tipo da propriedade")
+        partner_id = fields.Many2one('res.partner', string='Parceiro')
+        offer = fields.Float(string='Oferta')
+        type = fields.Many2one('real.state.property', string="Tipo da propriedade", ondelete='cascade')

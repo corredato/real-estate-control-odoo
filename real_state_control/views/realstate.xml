@@ -26,9 +26,7 @@
             <form>
                 <sheet>
                     <h1>
-                        <group>
                             <field name="reference" readonly="1"/>
-                        </group>
                     </h1>
                     <div style="display: flex">
                         <group>
@@ -60,7 +58,6 @@
                                     <tree>
                                         <field name="partner_id"/>
                                         <field name="offer"/>
-                                        <field name="newtype" invisible="1"/>
                                     </tree>
                                 </field>
                             </group>
