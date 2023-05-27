@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+
+
+        <record id="seq_real_state" model="ir.sequence">
+            <field name="name">Real State Sequence</field>
+            <field name="code">real.state</field>
+            <field name="prefix">MOB</field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

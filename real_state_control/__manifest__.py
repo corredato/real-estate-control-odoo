@@ -7,9 +7,11 @@
     'sequence': 10,
     'description': """Controle Imobiliário""",
     'category': 'Productivity',
-    'website': 'https://www.odoo.com/page/billing',
+    'website': 'https://github.com/corredato',
     'depends': ['account', 'mail'],
     'data': ['views/realstate.xml',
+             'data/data.xml',
+             'views/realstate_property.xml',
              'security/ir.model.access.csv'
              ],
     'images': [],
