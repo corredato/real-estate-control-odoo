@@ -27,7 +27,7 @@
                 <sheet>
                     <h1>
                         <group>
-                            <field name="reference" readonly="1"/>
+                            <field name="reference" placeholder="Defina um nome de identificação para a mobília"/>
                         </group>
                     </h1>
                     <div style="display: flex">
@@ -60,7 +60,6 @@
                                     <tree>
                                         <field name="partner_id"/>
                                         <field name="offer"/>
-                                        <field name="newtype" invisible="1"/>
                                     </tree>
                                 </field>
                             </group>

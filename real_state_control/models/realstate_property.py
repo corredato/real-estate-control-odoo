@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 
 
 class RealStateProperty(models.Model):
@@ -6,6 +6,8 @@ class RealStateProperty(models.Model):
     _inherit = ['mail.thread','mail.activity.mixin']
     _description = "Propriedades"
 
+    reference = fields.Char(string='Pedido', required=True, copy=False, readonly=True,
+                            default=lambda self: _('New'))
     name = fields.Char(string='Tipo da propriedade')
     type = fields.Char(string='Tipo da propriedade')
     realstate_cep = fields.Char(string='Código postal')
@@ -20,4 +22,4 @@ class RealStateProperty(models.Model):
     garage = fields.Boolean(string='Garagem')
     garden = fields.Boolean(string='Quintal')
     total_area = fields.Integer(string='Área total (m²)')
-    realstate_line = fields.One2many('real.state.line', 'newtype', string='Pedidos')
+    realstate_line = fields.One2many('real.state.line', 'type', string='Pedidos')
