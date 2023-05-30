@@ -24,6 +24,11 @@
         <field name="model">real.state</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="action_confirm" id="action_confirm" string="Vendido" class="btn-primary" type="object"/>
+                    <button name="action_cancel" id="action_cancel" string="Voltar para provisório"  type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sale"/>
+                </header>
                 <sheet>
                     <h1>
                         <group>

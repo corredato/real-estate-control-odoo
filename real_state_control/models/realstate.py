@@ -9,7 +9,7 @@ class RealState(models.Model):
 
     reference = fields.Char(string='Referência',
                             required=True,
-                            copy=False,)
+                            copy=False, )
     type = fields.Many2one('real.state.property',
                            string="Tipo da propriedade",
                            required=True)
@@ -29,8 +29,16 @@ class RealState(models.Model):
     realstate_line = fields.One2many('real.state.line',
                                      'type',
                                      string='Pedidos')
+    state = fields.Selection([
+        ('draft', 'Provisório'),
+        ('sale', 'Vendido'),
+    ], string='Status', default='draft')
 
+    def action_confirm(self):
+        self.state = 'sale'
 
+    def action_cancel(self):
+        self.state = 'draft'
 
     class RealStateLine(models.Model):
         _name = 'real.state.line'
@@ -41,3 +49,7 @@ class RealState(models.Model):
         type = fields.Many2one('real.state.property',
                                string="Tipo da propriedade",
                                ondelete='cascade')
+        state = fields.Selection([
+            ('draft', 'Provisório'),
+            ('sale', 'Vendido'),
+        ], string='Status', default='draft')
