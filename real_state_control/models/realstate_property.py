@@ -3,7 +3,7 @@ from odoo import api, fields, models, _
 
 class RealStateProperty(models.Model):
     _name = 'real.state.property'
-    _inherit = ['mail.thread','mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = "Propriedades"
 
     reference = fields.Char(string='Pedido', required=True, copy=False, readonly=True,
@@ -23,3 +23,8 @@ class RealStateProperty(models.Model):
     garden = fields.Boolean(string='Quintal')
     total_area = fields.Integer(string='Área total (m²)')
     realstate_line = fields.One2many('real.state.line', 'type', string='Pedidos')
+
+    state = fields.Selection([
+        ('draft', 'Provisório'),
+        ('sale', 'Vendido'),
+    ], string='Status', default='draft')

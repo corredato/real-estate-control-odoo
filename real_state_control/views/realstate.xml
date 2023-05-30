@@ -24,6 +24,11 @@
         <field name="model">real.state</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button name="action_confirm" id="action_confirm" string="Vendido" class="btn-primary" type="object" attrs="{'invisible': [('state', '=', 'sale')]}"/>/>
+                    <button name="action_cancel" id="action_cancel" string="Voltar para provisório"  type="object" attrs="{'invisible': [('state', '=', 'draft')]}"/>/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sale"/>
+                </header>
                 <sheet>
                     <h1>
                         <group>
@@ -56,10 +61,11 @@
                         </page>
                         <page string="Pedido">
                             <group>
-                                <field name="realstate_line" widget="one2many">
+                                <field name="realstate_line" widget="one2many" editable="bottom">
                                     <tree>
                                         <field name="partner_id"/>
                                         <field name="offer"/>
+                                        <field name="state" widget="statusbar"/>
                                     </tree>
                                 </field>
                             </group>
