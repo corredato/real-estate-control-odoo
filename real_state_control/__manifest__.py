@@ -8,7 +8,7 @@
     'description': """Controle Imobiliário""",
     'category': 'Productivity',
     'website': 'https://github.com/corredato',
-    'depends': ['base','account', 'mail'],
+    'depends': ['base','account', 'mail', 'account'],
     'data': ['security/ir.model.access.csv',
              'views/realstate.xml',
              'views/realstate_property.xml'

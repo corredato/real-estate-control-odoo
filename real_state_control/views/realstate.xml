@@ -25,8 +25,9 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_confirm" id="action_confirm" string="Vendido" class="btn-primary" type="object" attrs="{'invisible': [('state', '=', 'sale')]}"/>/>
-                    <button name="action_cancel" id="action_cancel" string="Voltar para provisório"  type="object" attrs="{'invisible': [('state', '=', 'draft')]}"/>/>
+                    <button name="action_confirm" id="action_confirm" string="Vendido" class="btn-primary" type="object" attrs="{'invisible': [('state', '=', 'sale')]}"/>
+                    <button name="action_create_invoice" id="action_create_invoice" string="Criar Fatura" class="btn-primary" type="object" attrs="{'invisible': [('state', '=', 'draft')]}"/>/>
+                    <button name="action_cancel" id="action_cancel" string="Voltar para provisório"  type="object" attrs="{'invisible': [('state', '=', 'draft')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,sale"/>
                 </header>
                 <sheet>
@@ -74,6 +75,7 @@
                             <group>
                             <field name="user_id"/>
                             <field name="buyer_id"/>
+                             <field name="currency_id"/>
                             </group>
                         </page>
                     </notebook>

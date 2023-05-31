@@ -29,6 +29,9 @@ class RealState(models.Model):
         ('draft', 'Provisório'),
         ('sale', 'Vendido'),
     ], string='Status', default='draft', track_visibility='onchange')
+    partner_id = fields.Many2one('res.partner', string='Parceiro')
+    currency_id = fields.Many2one('res.currency', store=True, readonly=True, tracking=True, required=True,
+                                  string='Currency', default=lambda self: self.env.company.currency_id)
 
     @api.depends('realstate_line.offer')
     def _compute_best_offer(self):
@@ -52,6 +55,38 @@ class RealState(models.Model):
 
     def action_cancel(self):
         self.state = 'draft'
+
+    def action_create_invoice(self):
+        vals = {
+            'currency_id': self.currency_id
+        }
+        for record in self:
+            delivey_invoice = self.env['account.move'].create([
+                {
+                    'move_type': 'out_invoice',
+                    'invoice_date': fields.Date.context_today(record),
+                    'partner_id': record.buyer_id.id,
+                    'currency_id': record.currency_id.id,
+                    'amount_total': self.selling_price,
+                    'invoice_line_ids': [
+                        (0, None, {
+                            'product_id': 1,
+                            'name': '',
+                            'quantity': 1,
+                            'price_unit': record.selling_price,
+                            'price_subtotal': record.selling_price,
+                        }),
+                    ],
+                },
+            ])
+            delivey_invoice.action_post()
+            return {
+                'type': 'ir.actions.act_window',
+                'name': 'Fatura',
+                'res_model': 'account.move',
+                'view_mode': 'form',
+                'res_id': delivey_invoice.id,
+            }
 
 
 class RealStateLine(models.Model):
