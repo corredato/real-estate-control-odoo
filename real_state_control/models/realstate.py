@@ -22,10 +22,19 @@ class RealState(models.Model):
     garden = fields.Boolean(string='Quintal')
     total_area = fields.Integer(string='Área total (m²)')
     realstate_line = fields.One2many('real.state.line', 'realstate_id', string='Pedidos')
+    user_id = fields.Many2one('res.users', string='Vendedor', readonly=True, default=lambda self: self.env.user)
+    buyer_name = fields.Char(string='Nome do Comprador', compute='_compute_buyer_name', store=True)
+    buyer_id = fields.Many2one('res.partner', string='Comprador')
     state = fields.Selection([
         ('draft', 'Provisório'),
         ('sale', 'Vendido'),
     ], string='Status', default='draft', track_visibility='onchange')
+
+    @api.depends('realstate_line.offer')
+    def _compute_best_offer(self):
+        for record in self:
+            offers = record.realstate_line.mapped('offer')
+            record.best_offer = max(offers) if offers else 0.0
 
     @api.depends('realstate_line.offer')
     def _compute_best_offer(self):
@@ -38,6 +47,7 @@ class RealState(models.Model):
         accepted_offer = self.realstate_line.filtered(lambda line: line.state == 'accepted' and line.offer)
         if accepted_offer:
             self.selling_price = accepted_offer[0].offer
+            self.buyer_id = accepted_offer[0].partner_id
         self.state = 'sale'
 
     def action_cancel(self):
@@ -46,7 +56,7 @@ class RealState(models.Model):
 
 class RealStateLine(models.Model):
     _name = 'real.state.line'
-    
+
     partner_id = fields.Many2one('res.partner', string='Parceiro')
     realstate_id = fields.Many2one('real.state', string='Propriedade')
     offer = fields.Float(string='Oferta')

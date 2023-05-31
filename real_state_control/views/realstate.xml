@@ -70,6 +70,12 @@
                                 </field>
                             </group>
                         </page>
+                        <page string="Outras informações">
+                            <group>
+                            <field name="user_id"/>
+                            <field name="buyer_id"/>
+                            </group>
+                        </page>
                     </notebook>
 
 
