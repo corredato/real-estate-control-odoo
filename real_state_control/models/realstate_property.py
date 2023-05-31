@@ -22,7 +22,7 @@ class RealStateProperty(models.Model):
     garage = fields.Boolean(string='Garagem')
     garden = fields.Boolean(string='Quintal')
     total_area = fields.Integer(string='Área total (m²)')
-    realstate_line = fields.One2many('real.state.line', 'type', string='Pedidos')
+    realstate_line = fields.One2many('real.state.line', 'realstate_id', string='Pedidos')
 
     state = fields.Selection([
         ('draft', 'Provisório'),
