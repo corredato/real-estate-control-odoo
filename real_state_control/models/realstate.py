@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 
 
 class RealState(models.Model):
@@ -11,7 +12,7 @@ class RealState(models.Model):
     type = fields.Many2one('real.state.property', string="Tipo da propriedade", required=True)
     realstate_cep = fields.Char(string='Código postal', required=True)
     date_when = fields.Date(string='Disponível desde')
-    expected_price = fields.Float(string='Expectativa de preço')
+    expected_price = fields.Float(string='Expectativa de preço', required=True)
     best_offer = fields.Float(string='Melhor oferta', readonly=True, compute='_compute_best_offer')
     selling_price = fields.Float(string='Preço de venda', readonly=True)
     description = fields.Text(string='Descrição')
@@ -23,8 +24,8 @@ class RealState(models.Model):
     total_area = fields.Integer(string='Área total (m²)')
     realstate_line = fields.One2many('real.state.line', 'realstate_id', string='Pedidos')
     user_id = fields.Many2one('res.users', string='Vendedor', readonly=True, default=lambda self: self.env.user)
-    buyer_name = fields.Char(string='Nome do Comprador', compute='_compute_buyer_name', store=True)
-    buyer_id = fields.Many2one('res.partner', string='Comprador')
+    buyer_name = fields.Char(string='Nome do Comprador',  store=True)
+    buyer_id = fields.Many2one('res.partner', string='Comprador', readonly=True)
     state = fields.Selection([
         ('draft', 'Provisório'),
         ('sale', 'Vendido'),
@@ -39,6 +40,12 @@ class RealState(models.Model):
             offers = record.realstate_line.mapped('offer')
             record.best_offer = max(offers) if offers else 0.0
 
+    @api.constrains('expected_price')
+    def _check_expected_price(self):
+        for record in self:
+            if record.expected_price < 0:
+                raise ValidationError(_('Insira uma expectativa de preço válida'))
+
     @api.depends('realstate_line.offer')
     def _compute_best_offer(self):
         for record in self:
@@ -52,6 +59,13 @@ class RealState(models.Model):
             self.selling_price = accepted_offer[0].offer
             self.buyer_id = accepted_offer[0].partner_id
         self.state = 'sale'
+        for record in self:
+            accepted_offer = record.realstate_line.filtered(lambda line: line.state == 'accepted')
+            if not accepted_offer:
+                raise ValidationError("Você não pode vendar um imóvel sem uma oferta")
+            record.selling_price = accepted_offer[0].offer
+            record.buyer_id = accepted_offer[0].partner_id
+            record.state = 'sale'
 
     def action_cancel(self):
         self.state = 'draft'
@@ -71,7 +85,7 @@ class RealState(models.Model):
                     'invoice_line_ids': [
                         (0, None, {
                             'product_id': 1,
-                            'name': '',
+                            'name': record.description,
                             'quantity': 1,
                             'price_unit': record.selling_price,
                             'price_subtotal': record.selling_price,
@@ -99,3 +113,18 @@ class RealStateLine(models.Model):
         ('accepted', 'Aceito'),
         ('denied', 'Negado'),
     ], string='Status', track_visibility='onchange')
+
+    @api.constrains('offer')
+    def _check_expected_price(self):
+        for record in self:
+            if record.offer < 0:
+                raise ValidationError(_('Insira uma expectativa de preço válida'))
+
+    @api.constrains('state')
+    def _check_unique_accepted_state(self):
+        for line in self:
+            if line.state == 'accepted':
+                lines = self.search(
+                    [('realstate_id', '=', line.realstate_id.id), ('state', '=', 'accepted'), ('id', '!=', line.id)])
+                if lines:
+                    raise ValidationError('Apenas uma oferta pode estar selecionada como aceita no registro')
