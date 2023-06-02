@@ -24,8 +24,9 @@ class RealState(models.Model):
     total_area = fields.Integer(string='Área total (m²)')
     realstate_line = fields.One2many('real.state.line', 'realstate_id', string='Pedidos')
     user_id = fields.Many2one('res.users', string='Vendedor', readonly=True, default=lambda self: self.env.user)
-    buyer_name = fields.Char(string='Nome do Comprador',  store=True)
+    buyer_name = fields.Char(string='Nome do Comprador', store=True)
     buyer_id = fields.Many2one('res.partner', string='Comprador', readonly=True)
+    invoice_id = fields.Many2one('account.move', string='Fatura', readonly=True)
     state = fields.Selection([
         ('draft', 'Provisório'),
         ('sale', 'Vendido'),
@@ -103,10 +104,12 @@ class RealState(models.Model):
             }
 
 
+
+
 class RealStateLine(models.Model):
     _name = 'real.state.line'
 
-    partner_id = fields.Many2one('res.partner', string='Parceiro')
+    partner_id = fields.Many2one('res.partner', string='Parceiro', required=True)
     realstate_id = fields.Many2one('real.state', string='Propriedade')
     offer = fields.Float(string='Oferta')
     state = fields.Selection([
@@ -128,3 +131,14 @@ class RealStateLine(models.Model):
                     [('realstate_id', '=', line.realstate_id.id), ('state', '=', 'accepted'), ('id', '!=', line.id)])
                 if lines:
                     raise ValidationError('Apenas uma oferta pode estar selecionada como aceita no registro')
+
+    @api.onchange('state')
+    def _onchange_state(self):
+        if self.realstate_id.state == 'sale' and self.state != 'accepted':
+            raise ValidationError("Não é possível modificar as ofertas caso a propriedade esteja vendida.")
+
+    @api.constrains('state')
+    def _check_real_state_sold(self):
+        for line in self:
+            if line.realstate_id.state == 'sale' and line.state != 'accepted':
+                raise ValidationError("Não é possível modificar as ofertas caso a propriedade esteja vendida.")

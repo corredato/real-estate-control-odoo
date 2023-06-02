@@ -75,7 +75,7 @@
                             <group>
                             <field name="user_id"/>
                             <field name="buyer_id"/>
-                             <field name="currency_id"/>
+                             <field name="currency_id" invisible="1"/>
                             </group>
                         </page>
                     </notebook>
