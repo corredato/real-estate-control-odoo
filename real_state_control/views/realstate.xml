@@ -66,6 +66,8 @@
                                     <tree>
                                         <field name="partner_id"/>
                                         <field name="offer"/>
+                                        <button name="button_check" style="color: green;" icon="fa-check" type="object"/>
+                                        <button name="button_x" style="color: red;" icon="fa-times" type="object"/>
                                         <field name="state" widget="statusbar"/>
                                     </tree>
                                 </field>

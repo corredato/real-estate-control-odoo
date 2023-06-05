@@ -104,8 +104,6 @@ class RealState(models.Model):
             }
 
 
-
-
 class RealStateLine(models.Model):
     _name = 'real.state.line'
 
@@ -142,3 +140,9 @@ class RealStateLine(models.Model):
         for line in self:
             if line.realstate_id.state == 'sale' and line.state != 'accepted':
                 raise ValidationError("Não é possível modificar as ofertas caso a propriedade esteja vendida.")
+
+    def button_check(self):
+        self.write({'state': 'accepted'})
+
+    def button_x(self):
+        self.write({'state': 'denied'})
